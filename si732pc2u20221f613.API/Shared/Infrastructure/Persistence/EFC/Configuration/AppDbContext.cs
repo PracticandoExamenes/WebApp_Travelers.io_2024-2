@@ -1,6 +1,7 @@
 using si732pc2u20221f613.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
 using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using Microsoft.EntityFrameworkCore;
+using si732pc2u20221f613.API.Subscriptions.domain.model.aggregates;
 
 namespace si732pc2u20221f613.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 
@@ -9,9 +10,10 @@ namespace si732pc2u20221f613.API.Shared.Infrastructure.Persistence.EFC.Configura
 /// </summary>
 public class AppDbContext(DbContextOptions options) : DbContext(options)
 {
+    public DbSet<Plan> Plans { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
-        // Add the created and updated interceptor
         builder.AddCreatedUpdatedInterceptor();
         base.OnConfiguring(builder);
     }
@@ -19,12 +21,9 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-
-        //builder.Entity<FavoriteSource>().HasKey(f => f.Id);
-        //builder.Entity<FavoriteSource>().Property(f => f.Id).IsRequired().ValueGeneratedOnAdd();
-        //builder.Entity<FavoriteSource>().Property(f => f.SourceId).IsRequired();
-        //builder.Entity<FavoriteSource>().Property(f => f.NewsApiKey).IsRequired();
-
         builder.UseSnakeCaseNamingConvention();
+
+        // Si quieres configurar propiedades adicionales, puedes hacerlo aquí también:
+        // builder.Entity<Plan>().Property(p => p.Name).HasMaxLength(120).IsRequired();
     }
 }

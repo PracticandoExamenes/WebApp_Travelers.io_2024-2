@@ -123,3 +123,4 @@ C:\Users\User\Desktop\UPC\6toCiclo\Apps Web\upc-pre-202402-si730-fake-pc2-u20221
 C:\Users\User\Desktop\UPC\6toCiclo\Apps Web\upc-pre-202402-si730-fake-pc2-u20221f613\si732pc2u20221f613.API\obj\Debug\net9.0\si732pc2u20221f613.API.pdb
 C:\Users\User\Desktop\UPC\6toCiclo\Apps Web\upc-pre-202402-si730-fake-pc2-u20221f613\si732pc2u20221f613.API\obj\Debug\net9.0\si732pc2u20221f613.API.genruntimeconfig.cache
 C:\Users\User\Desktop\UPC\6toCiclo\Apps Web\upc-pre-202402-si730-fake-pc2-u20221f613\si732pc2u20221f613.API\obj\Debug\net9.0\ref\si732pc2u20221f613.API.dll
+C:\Users\User\Desktop\UPC\6toCiclo\Apps Web\upc-pre-202402-si730-fake-pc2-u20221f613\si732pc2u20221f613.API\obj\Debug\net9.0\si732pc2u20221f613.API.sourcelink.json

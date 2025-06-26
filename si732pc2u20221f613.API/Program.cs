@@ -1,8 +1,12 @@
 using si732pc2u20221f613.API.Shared.Domain.Repositories;
 using si732pc2u20221f613.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using si732pc2u20221f613.API.Shared.Infrastructure.Persistence.EFC.Repositories;
-using Microsoft.EntityFrameworkCore;
+using si732pc2u20221f613.API.Subscriptions.Application.Internal.CommandServices;
+using si732pc2u20221f613.API.Subscriptions.domain.Repositories;
+using si732pc2u20221f613.API.Subscriptions.infrastructure.Persistence.EFC.Repositories;
 using si732pc2u20221f613.API.Shared.Infrastructure.Interfaces.ASP.Configuration;
+using Microsoft.EntityFrameworkCore;
+using si732pc2u20221f613.API.Subscriptions.domain.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,50 +18,50 @@ builder.Services.AddRouting(options => options.LowercaseUrls = true);
 // Configure Kebab Case Route Naming Convention
 builder.Services.AddControllers(options => options.Conventions.Add(new KebabCaseRouteNamingConvention()));
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options => options.EnableAnnotations());
 
-// Add Database Connection
+// Get DB connection string
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
-// Verify Database Connection String
 if (connectionString is null)
-    // Stop the application if the connection string is not set.
     throw new Exception("Database connection string is not set.");
 
-// Configure Database Context and Logging Levels
+// Configure DbContext
 if (builder.Environment.IsDevelopment())
-    builder.Services.AddDbContext<AppDbContext>(
-        options =>
-        {
-            options.UseMySQL(connectionString)
-                .LogTo(Console.WriteLine, LogLevel.Information)
-                .EnableSensitiveDataLogging()
-                .EnableDetailedErrors();
-        });
+{
+    builder.Services.AddDbContext<AppDbContext>(options =>
+    {
+        options.UseMySQL(connectionString)
+            .LogTo(Console.WriteLine, LogLevel.Information)
+            .EnableSensitiveDataLogging()
+            .EnableDetailedErrors();
+    });
+}
 else if (builder.Environment.IsProduction())
-    builder.Services.AddDbContext<AppDbContext>(
-        options =>
-        {
-            options.UseMySQL(connectionString)
-                .LogTo(Console.WriteLine, LogLevel.Error)
-                .EnableDetailedErrors();
-        });
+{
+    builder.Services.AddDbContext<AppDbContext>(options =>
+    {
+        options.UseMySQL(connectionString)
+            .LogTo(Console.WriteLine, LogLevel.Error)
+            .EnableDetailedErrors();
+    });
+}
 
-// Configure Dependency Injection
+// === Dependency Injection Configuration ===
 
-// Shared Bounded Context Injection Configuration
+// Shared
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-// News Bounded Context Injection Configuration
-//builder.Services.AddScoped<IFavoriteSourceRepository, FavoriteSourceRepository>();
-//builder.Services.AddScoped<IFavoriteSourceCommandService, FavoriteSourceCommandService>();
-//builder.Services.AddScoped<IFavoriteSourceQueryService, FavoriteSourceQueryService>();
+// Subscriptions - Command Service + Repository
+builder.Services.AddScoped<IPlanCommandService, PlanCommandService>();
+builder.Services.AddScoped<IPlanRepository, PlanRepository>();
+
+// ==========================================
 
 var app = builder.Build();
 
-// Verify Database Objects are created
+// Ensure DB is created
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -65,17 +69,11 @@ using (var scope = app.Services.CreateScope())
     context.Database.EnsureCreated();
 }
 
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-//}
+// HTTP pipeline
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
